@@ -4,6 +4,22 @@ use std::fs::{create_dir, File};
 use std::path::{Path};
 use std::io::{BufWriter, Write};
 
+enum RefLogKind {
+    COMMIT,
+    CHECKOUT,
+}
+
+struct RefLog {
+    prev_hash: String,
+    hash: String,
+    author: String,
+    email: String,
+    timestamp: u64,
+    timezone: i16,
+    kind: RefLogKind,
+    description: String,
+}
+
 fn print_usage(args: &Vec<String>) {
     eprintln!("Usage: {:} subcommand", args[0])
 }

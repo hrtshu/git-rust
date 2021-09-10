@@ -6,6 +6,7 @@ use std::io::{BufWriter, Write};
 
 mod api;
 use api::reflog::{RefLog, RefLogKind, append_reflog};
+use api::objects::ObjectWriter;
 
 fn print_usage(args: &Vec<String>) {
     eprintln!("Usage: {:} subcommand", args[0])
@@ -59,6 +60,9 @@ fn main() {
         },
         "add" => {
             println!("add!!!");
+            let mut writer = ObjectWriter::new();
+            writer.write(b"hoge");
+            writer.finalize();
             let ref_log = RefLog {
                 prev_hash: String::from("0000000000000000000000000000000000000000"),
                 hash: String::from("335584cfc68b36a5f2332c10b32a0cf6a441cad8"),

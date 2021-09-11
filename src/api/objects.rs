@@ -1,9 +1,9 @@
-use std::io::{BufWriter};
+use std::io::{BufReader, BufWriter};
 use std::io::prelude::*;
-use std::fs::{OpenOptions, create_dir_all};
+use std::fs::{File, OpenOptions, create_dir_all};
 use std::path::{Path, PathBuf};
 use flate2::Compression;
-use flate2::write::ZlibEncoder;
+use flate2::write::{ZlibEncoder, ZlibDecoder};
 use sha1::{Sha1, Digest};
 
 const OBJECTS_DIR: &str = "git2/objects/";
@@ -48,5 +48,18 @@ impl ObjectWriter {
 
         hash
     }
-    }
+}
+
+pub fn read_object(hash: &str) -> Vec<u8> {
+    let mut writer = Vec::new();
+    let mut decoder = ZlibDecoder::new(writer);
+
+    let object_path = get_object_path(hash);
+    let mut f = BufReader::new(File::open(object_path).unwrap());
+    let mut buf = Vec::new();
+    f.read_to_end(&mut buf).unwrap();
+    decoder.write(&buf).unwrap();
+    writer = decoder.finish().unwrap();
+
+    writer
 }

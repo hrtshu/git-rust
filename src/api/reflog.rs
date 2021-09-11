@@ -47,5 +47,5 @@ pub fn append_reflog(target: &str, log: RefLog) {
         log.timezone,
         log.kind,
         log.description
-    );
+    ).unwrap();
 }

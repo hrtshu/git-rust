@@ -2,7 +2,7 @@ use std::env::{args};
 use std::process::{exit};
 use std::fs::{create_dir, File};
 use std::path::{Path};
-use std::io::{BufWriter, Write};
+use std::io::{BufWriter, Read, Write, stdin};
 
 mod api;
 use api::reflog::{RefLog, RefLogKind, append_reflog};
@@ -44,8 +44,17 @@ fn do_init() {
     create_dir(&refs_tags_dir).unwrap();
 }
 
+fn do_write_object() {
+    let mut content = Vec::new();
+    stdin().read_to_end(&mut content).unwrap();
+    let mut writer = ObjectWriter::new();
+    writer.write(&content);
+    let hash = writer.finalize();
+    println!("{}", hash);
+}
+
 fn main() {
-    let args: Vec<String> = args().collect();
+    let mut args: Vec<String> = args().collect();
 
     if args.len() < 2 {
         print_usage(&args);
@@ -80,6 +89,9 @@ fn main() {
                 description: String::from("Initial commit"),
             };
             append_reflog("hoge", ref_log);
+        },
+        "write-object" => {
+            do_write_object();
         },
         _ => {
             eprintln!("unknown subcommand: {:}", subcommand);

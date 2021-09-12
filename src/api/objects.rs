@@ -17,9 +17,9 @@ fn get_object_path(hash: &str) -> PathBuf {
     let hash1 = &hash[0..2];
     let hash2 = &hash[2..];
 
-    let hash_dir = Path::new(OBJECTS_DIR).join(Path::new(hash1));
+    let hash_dir = Path::new(OBJECTS_DIR).join(hash1);
     create_dir_all(&hash_dir).unwrap();
-    let object_file = hash_dir.join(Path::new(hash2));
+    let object_file = hash_dir.join(hash2);
 
     object_file
 }

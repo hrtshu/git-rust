@@ -54,16 +54,17 @@ impl ObjectWriter {
     }
 }
 
-pub fn read_object(hash: &str) -> Vec<u8> {
+pub fn read_object(hash: &str) -> io::Result<Vec<u8>> {
     let mut writer = Vec::new();
     let mut decoder = ZlibDecoder::new(writer);
 
+    // current_dir: falseを渡しているのでErrが返ることはない
     let object_path = get_object_path(hash, false).unwrap();
-    let mut f = io::BufReader::new(File::open(object_path).unwrap());
+    let mut f = io::BufReader::new(File::open(object_path)?);
     let mut buf = Vec::new();
-    f.read_to_end(&mut buf).unwrap();
-    decoder.write(&buf).unwrap();
-    writer = decoder.finish().unwrap();
+    f.read_to_end(&mut buf)?;
+    decoder.write(&buf)?;
+    writer = decoder.finish()?;
 
-    writer
+    Ok(writer)
 }

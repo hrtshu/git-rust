@@ -78,11 +78,24 @@ fn do_read_object(subcommand_args: Vec<String>) -> i32 {
     }
     let hash = subcommand_args[0].to_string();
 
-    let content = read_object(&hash);
-    let res = String::from_utf8(content).unwrap();
-    print!("{}", res);
+    let content = match read_object(&hash) {
+        Ok(content) => content,
+        Err(_) => {
+            eprintln!("error: failed to read object file");
+            return 1;
+        },
+    };
 
-    0
+    match String::from_utf8(content) {
+        Ok(res) => {
+            print!("{}", res);
+            0
+        },
+        Err(_) => {
+            eprintln!("error: can't display the content read from object file");
+            1
+        },
+    }
 }
 
 fn main() {

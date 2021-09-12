@@ -12,7 +12,7 @@ fn print_usage(args: &Vec<String>) {
     eprintln!("Usage: {:} subcommand", args[0])
 }
 
-fn do_init() {
+fn do_init() -> i32 {
     let path_to_init = Path::new(".");
     let git_dir = path_to_init.join(".git");
 
@@ -42,27 +42,33 @@ fn do_init() {
     // create .git/refs/tags/ directory
     let refs_tags_dir = refs_dir.join("tags");
     create_dir(&refs_tags_dir).unwrap();
+
+    0
 }
 
-fn do_write_object() {
+fn do_write_object() -> i32 {
     let mut content = Vec::new();
     stdin().read_to_end(&mut content).unwrap();
     let mut writer = ObjectWriter::new();
     writer.write(&content);
     let hash = writer.finalize();
     println!("{}", hash);
+
+    0
 }
 
-fn do_read_object(subcommand_args: Vec<String>) {
+fn do_read_object(subcommand_args: Vec<String>) -> i32 {
     if subcommand_args.len() != 1 {
         eprintln!("Usage: read-object OBJECT_HASH");
-        return;
+        return 1;
     }
     let hash = subcommand_args[0].to_string();
 
     let content = read_object(&hash);
     let res = String::from_utf8(content).unwrap();
     print!("{}", res);
+
+    0
 }
 
 fn main() {
@@ -78,9 +84,9 @@ fn main() {
     args.remove(0);
     let subcommand_args = args;
 
-    match subcommand.as_str() {
+    let exit_code: i32 = match subcommand.as_str() {
         "init" => {
-            do_init();
+            do_init()
         },
         "add" => {
             println!("add!!!");
@@ -96,16 +102,20 @@ fn main() {
                 description: String::from("Initial commit"),
             };
             append_reflog("hoge", ref_log);
+
+            0
         },
         "write-object" => {
-            do_write_object();
+            do_write_object()
         },
         "read-object" => {
-            do_read_object(subcommand_args);
+            do_read_object(subcommand_args)
         }
         _ => {
             eprintln!("unknown subcommand: {:}", subcommand);
-            exit(1);
+            1
         }
-    }
+    };
+
+    exit(exit_code);
 }

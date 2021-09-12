@@ -48,13 +48,27 @@ fn do_init() -> i32 {
 
 fn do_write_object() -> i32 {
     let mut content = Vec::new();
-    stdin().read_to_end(&mut content).unwrap();
-    let mut writer = ObjectWriter::new();
-    writer.write(&content);
-    let hash = writer.finalize();
-    println!("{}", hash);
+    if let Err(_) = stdin().read_to_end(&mut content) {
+        eprintln!("error: failed to read stdin");
+        return 1;
+    };
 
-    0
+    let mut writer = ObjectWriter::new();
+    if let Err(_) = writer.write(&content) {
+        eprintln!("error: failed to write to the object file");
+        return 1;
+    };
+
+    match writer.finalize() {
+        Ok(hash) => {
+            println!("{}", hash);
+            0
+        },
+        Err(_) => {
+            eprintln!("error: failed to write to the object file");
+            1
+        },
+    }
 }
 
 fn do_read_object(subcommand_args: Vec<String>) -> i32 {

@@ -35,12 +35,6 @@ impl ObjectWriter {
         }
     }
 
-    pub fn write(&mut self, chunk: &[u8]) -> io::Result<()> {
-        self.encoder.write_all(chunk)?;
-        self.hasher.update(chunk);
-        Ok(())
-    }
-
     pub fn finalize(self) -> io::Result<String> {
         let mut compressed_bytes = self.encoder.finish()?;
         let res = self.hasher.finalize();
@@ -51,6 +45,18 @@ impl ObjectWriter {
         f.write_all(compressed_bytes.by_ref())?;
 
         Ok(hash)
+    }
+}
+
+impl Write for ObjectWriter {
+    fn write(&mut self, chunk: &[u8]) -> io::Result<usize> {
+        let size = self.encoder.write(chunk)?;
+        self.hasher.update(chunk);
+        Ok(size)
+    }
+
+    fn flush(&mut self) -> io::Result<()> {
+        unimplemented!();
     }
 }
 

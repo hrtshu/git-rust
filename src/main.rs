@@ -7,6 +7,7 @@ use std::io::{BufWriter, Read, Write, stdin};
 mod api;
 use api::reflog::{RefLog, RefLogKind, append_reflog};
 use api::objects::raw::{ObjectWriter, read_object};
+use api::objects::blob::write_blob_object;
 
 fn print_usage(args: &Vec<String>) {
     eprintln!("Usage: {:} subcommand", args[0])
@@ -98,6 +99,25 @@ fn do_read_object(subcommand_args: Vec<String>) -> i32 {
     }
 }
 
+fn do_write_blob() -> i32 {
+    let mut content = Vec::new();
+    if let Err(_) = stdin().read_to_end(&mut content) {
+        eprintln!("error: failed to read stdin");
+        return 1;
+    };
+
+    match write_blob_object(&content) {
+        Ok(hash) => {
+            println!("{}", hash);
+            0
+        },
+        Err(_) => {
+            eprintln!("error: failed to write blob object");
+            return 1;
+        },
+    }
+}
+
 fn main() {
     let mut args: Vec<String> = args().collect();
 
@@ -121,6 +141,9 @@ fn main() {
         "read-object" => {
             do_read_object(subcommand_args)
         },
+        "write-blob" => {
+            do_write_blob()
+        }
         "add" => {
             println!("add!!!");
 

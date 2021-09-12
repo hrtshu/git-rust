@@ -88,6 +88,12 @@ fn main() {
         "init" => {
             do_init()
         },
+        "write-object" => {
+            do_write_object()
+        },
+        "read-object" => {
+            do_read_object(subcommand_args)
+        },
         "add" => {
             println!("add!!!");
 
@@ -105,12 +111,6 @@ fn main() {
 
             0
         },
-        "write-object" => {
-            do_write_object()
-        },
-        "read-object" => {
-            do_read_object(subcommand_args)
-        }
         _ => {
             eprintln!("unknown subcommand: {:}", subcommand);
             1

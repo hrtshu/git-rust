@@ -1,7 +1,7 @@
-use std::env::{args};
-use std::process::{exit};
+use std::env::args;
+use std::process::exit;
 use std::fs::{create_dir, File};
-use std::path::{Path};
+use std::path::Path;
 use std::io::{BufWriter, Read, Write, stdin};
 
 mod api;

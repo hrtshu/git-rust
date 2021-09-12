@@ -6,7 +6,7 @@ use std::io::{BufWriter, Read, Write, stdin};
 
 mod api;
 use api::reflog::{RefLog, RefLogKind, append_reflog};
-use api::objects::{ObjectWriter, read_object};
+use api::objects::raw::{ObjectWriter, read_object};
 
 fn print_usage(args: &Vec<String>) {
     eprintln!("Usage: {:} subcommand", args[0])

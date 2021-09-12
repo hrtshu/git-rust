@@ -2,7 +2,7 @@ use std::env::args;
 use std::process::exit;
 use std::fs::{create_dir, File};
 use std::path::Path;
-use std::io::{BufWriter, Read, Write, stdin};
+use std::io::{BufReader, BufWriter, Read, Write, stdin};
 
 mod api;
 use api::reflog::{RefLog, RefLogKind, append_reflog};
@@ -100,13 +100,9 @@ fn do_read_object(subcommand_args: Vec<String>) -> i32 {
 }
 
 fn do_write_blob() -> i32 {
-    let mut content = Vec::new();
-    if let Err(_) = stdin().read_to_end(&mut content) {
-        eprintln!("error: failed to read stdin");
-        return 1;
-    };
+    let mut stream = BufReader::new(stdin());
 
-    match write_blob_object(&content) {
+    match write_blob_object(&mut stream) {
         Ok(hash) => {
             println!("{}", hash);
             0

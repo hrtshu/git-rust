@@ -5,14 +5,14 @@ use std::fmt;
 
 pub enum RefLogKind {
     COMMIT,
-    CHECKOUT,
+    // CHECKOUT,
 }
 
 impl fmt::Display for RefLogKind {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             RefLogKind::COMMIT => write!(f, "commit"),
-            RefLogKind::CHECKOUT => write!(f, "checkout"),
+            // RefLogKind::CHECKOUT => write!(f, "checkout"),
         }
     }
 }

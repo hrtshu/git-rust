@@ -53,6 +53,18 @@ fn do_write_object() {
     println!("{}", hash);
 }
 
+fn do_read_object(subcommand_args: Vec<String>) {
+    if subcommand_args.len() != 1 {
+        eprintln!("Usage: read-object OBJECT_HASH");
+        return;
+    }
+    let hash = subcommand_args[0].to_string();
+
+    let content = read_object(&hash);
+    let res = String::from_utf8(content).unwrap();
+    print!("{}", res);
+}
+
 fn main() {
     let mut args: Vec<String> = args().collect();
 
@@ -62,6 +74,9 @@ fn main() {
     }
 
     let subcommand = args[1].to_string();
+    args.remove(0);
+    args.remove(0);
+    let subcommand_args = args;
 
     match subcommand.as_str() {
         "init" => {
@@ -93,6 +108,9 @@ fn main() {
         "write-object" => {
             do_write_object();
         },
+        "read-object" => {
+            do_read_object(subcommand_args);
+        }
         _ => {
             eprintln!("unknown subcommand: {:}", subcommand);
             exit(1);

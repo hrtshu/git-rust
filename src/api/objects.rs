@@ -13,12 +13,15 @@ pub struct ObjectWriter {
     hasher: Sha1,
 }
 
-fn get_object_path(hash: &str) -> PathBuf {
+fn get_object_path(hash: &str, create_dir: bool) -> PathBuf {
     let hash1 = &hash[0..2];
     let hash2 = &hash[2..];
 
     let hash_dir = Path::new(OBJECTS_DIR).join(hash1);
-    create_dir_all(&hash_dir).unwrap();
+    if create_dir {
+        create_dir_all(&hash_dir).unwrap();
+    };
+
     let object_file = hash_dir.join(hash2);
 
     object_file
@@ -42,7 +45,7 @@ impl ObjectWriter {
         let res = self.hasher.finalize();
 
         let hash = format!("{:x}", res);
-        let object_path = get_object_path(&hash);
+        let object_path = get_object_path(&hash, true);
         let mut f = BufWriter::new(OpenOptions::new().write(true).create(true).open(object_path).unwrap());
         f.write_all(compressed_bytes.by_ref()).unwrap();
 
@@ -54,7 +57,7 @@ pub fn read_object(hash: &str) -> Vec<u8> {
     let mut writer = Vec::new();
     let mut decoder = ZlibDecoder::new(writer);
 
-    let object_path = get_object_path(hash);
+    let object_path = get_object_path(hash, false);
     let mut f = BufReader::new(File::open(object_path).unwrap());
     let mut buf = Vec::new();
     f.read_to_end(&mut buf).unwrap();

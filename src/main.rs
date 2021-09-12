@@ -85,14 +85,6 @@ fn main() {
         "add" => {
             println!("add!!!");
 
-            let mut writer = ObjectWriter::new();
-            writer.write(b"hoge foo bar");
-            let hash = writer.finalize();
-
-            let content = read_object(&hash);
-            let res = String::from_utf8(content).unwrap();
-            println!("{}", res);
-
             let ref_log = RefLog {
                 prev_hash: String::from("0000000000000000000000000000000000000000"),
                 hash: String::from("335584cfc68b36a5f2332c10b32a0cf6a441cad8"),

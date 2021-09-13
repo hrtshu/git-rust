@@ -47,6 +47,7 @@ fn do_init() -> i32 {
     0
 }
 
+// TODO: src/api/objects/raw.rsのBUF_SIZEと共通化する
 const BUF_SIZE: usize = 2048;
 
 fn do_write_object() -> i32 {

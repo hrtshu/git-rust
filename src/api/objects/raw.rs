@@ -60,6 +60,8 @@ impl Write for ObjectWriter {
     }
 }
 
+const BUF_SIZE: usize = 2048;
+
 pub fn read_object(hash: &str) -> io::Result<Vec<u8>> {
     let mut writer = Vec::new();
     let mut decoder = ZlibDecoder::new(writer);
@@ -67,9 +69,17 @@ pub fn read_object(hash: &str) -> io::Result<Vec<u8>> {
     // current_dir: falseを渡しているのでErrが返ることはない
     let object_path = get_object_path(hash, false).unwrap();
     let mut f = io::BufReader::new(File::open(object_path)?);
-    let mut buf = Vec::new();
-    f.read_to_end(&mut buf)?;
-    decoder.write(&buf)?;
+
+    let mut buf = [0u8; BUF_SIZE];
+
+    loop {
+        if f.read(&mut buf)? <= 0 {
+            break;
+        }
+
+        decoder.write(&buf)?;
+    }
+
     writer = decoder.finish()?;
 
     Ok(writer)

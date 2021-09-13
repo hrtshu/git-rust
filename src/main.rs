@@ -47,18 +47,30 @@ fn do_init() -> i32 {
     0
 }
 
-fn do_write_object() -> i32 {
-    let mut content = Vec::new();
-    if let Err(_) = stdin().read_to_end(&mut content) {
-        eprintln!("error: failed to read stdin");
-        return 1;
-    };
+const BUF_SIZE: usize = 2048;
 
+fn do_write_object() -> i32 {
+    let mut buf = [0u8; BUF_SIZE];
     let mut writer = ObjectWriter::new();
-    if let Err(_) = writer.write(&content) {
-        eprintln!("error: failed to write to the object file");
-        return 1;
-    };
+
+    loop {
+        match BufReader::new(stdin()).read(&mut buf) {
+            Ok(size) => {
+                if size <= 0 {
+                    break;
+                }
+            }
+            Err(_) => {
+                eprintln!("error: failed to read stdin");
+                return 1;
+            },
+        };
+
+        if let Err(_) = writer.write(&buf) {
+            eprintln!("error: failed to write to the object file");
+            return 1;
+        };
+    }
 
     match writer.finalize() {
         Ok(hash) => {

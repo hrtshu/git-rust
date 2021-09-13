@@ -5,6 +5,7 @@ use std::path::Path;
 use std::io::{BufReader, BufWriter, Read, Write, stdin};
 
 mod api;
+use api::objects::tree::{TreeObject, TreeEntry};
 use api::reflog::{RefLog, RefLogKind, append_reflog};
 use api::objects::raw::{ObjectWriter, read_object};
 use api::objects::blob::write_blob_object;
@@ -127,6 +128,38 @@ fn do_write_blob() -> i32 {
     }
 }
 
+fn do_write_tree() -> i32 {
+    let mut writer = ObjectWriter::new();
+    let mut tree = TreeObject::new();
+
+    tree.add(TreeEntry {
+        mode: String::from("100644"),
+        name: String::from("hoge.txt"),
+        hash: *b"0123456789abcdef0123",
+    });
+    tree.add(TreeEntry {
+        mode: String::from("100644"),
+        name: String::from("foo.txt"),
+        hash: *b"0123456789abcdef0123",
+    });
+
+    if let Err(_) = tree.write_to(&mut writer) {
+        eprintln!("error: failed to write tree object");
+        return 1;
+    };
+
+    match writer.finalize() {
+        Ok(hash) => {
+            println!("{}", hash);
+            0
+        },
+        Err(_) => {
+            eprintln!("error: failed to write tree object");
+            1
+        },
+    }
+}
+
 fn main() {
     let mut args: Vec<String> = args().collect();
 
@@ -153,6 +186,9 @@ fn main() {
         "write-blob" => {
             do_write_blob()
         }
+        "write-tree" => {
+            do_write_tree()
+        },
         "add" => {
             println!("add!!!");
 

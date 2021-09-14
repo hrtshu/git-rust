@@ -1,6 +1,6 @@
 use std::io::prelude::*;
 
-use crate::api::objects::base::ObjectBase;
+use super::base::ObjectBase;
 
 pub struct BlobObject {
     pub content: Vec<u8>,

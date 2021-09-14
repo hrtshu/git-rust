@@ -6,6 +6,8 @@ use flate2::Compression;
 use flate2::write::{ZlibEncoder, ZlibDecoder};
 use sha1::{Sha1, Digest};
 
+use super::base::ObjectBase;
+
 const OBJECTS_DIR: &str = "git2/objects/";
 
 pub struct ObjectWriter {
@@ -33,6 +35,11 @@ impl ObjectWriter {
             encoder: ZlibEncoder::new(Vec::new(), Compression::default()),
             hasher: Sha1::new(),
         }
+    }
+
+    pub fn write_object<Base>(mut self, object: Base) -> std::io::Result<String> where Base: ObjectBase {
+        object.write_to(&mut self)?;
+        self.finalize()
     }
 
     pub fn finalize(self) -> io::Result<String> {

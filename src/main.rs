@@ -5,7 +5,6 @@ use std::path::Path;
 use std::io::{BufReader, BufWriter, Read, Write, stdin};
 
 mod api;
-use api::objects::base::ObjectBase;
 use api::objects::tree::{TreeObject, TreeEntry};
 use api::reflog::{RefLog, RefLogKind, append_reflog};
 use api::objects::io::{ObjectWriter, read_object};
@@ -124,14 +123,9 @@ fn do_write_blob() -> i32 {
     }
 
     let blob_object = BlobObject::new(content);
-    let mut writer = ObjectWriter::new();
+    let writer = ObjectWriter::new();
 
-    if let Err(_) = blob_object.write_to(&mut writer) {
-        eprintln!("error: failed to write blob object");
-        return 1;
-    }
-
-    match writer.finalize() {
+    match writer.write_object(blob_object) {
         Ok(hash) => {
             println!("{}", hash);
             0
@@ -144,7 +138,6 @@ fn do_write_blob() -> i32 {
 }
 
 fn do_write_tree() -> i32 {
-    let mut writer = ObjectWriter::new();
     let mut tree = TreeObject::new();
 
     tree.add(TreeEntry {
@@ -158,12 +151,9 @@ fn do_write_tree() -> i32 {
         hash: *b"0123456789abcdef0123",
     });
 
-    if let Err(_) = tree.write_to(&mut writer) {
-        eprintln!("error: failed to write tree object");
-        return 1;
-    };
+    let writer = ObjectWriter::new();
 
-    match writer.finalize() {
+    match writer.write_object(tree) {
         Ok(hash) => {
             println!("{}", hash);
             0

@@ -1,5 +1,7 @@
 use std::io::Write;
 
+use super::base::ObjectBase;
+
 const HASH_SIZE: usize = 20;
 
 pub struct TreeEntry {
@@ -35,8 +37,14 @@ impl TreeObject {
     pub fn add(&mut self, entry: TreeEntry) {
         self.entries.push(entry);
     }
+}
 
-    pub fn size(&self) -> usize {
+impl ObjectBase for TreeObject {
+    fn obj_type(&self) -> &str {
+        "tree"
+    }
+
+    fn body_size(&self) -> usize {
         let mut total: usize = 0;
         for entry in self.entries.iter() {
             total += entry.size();
@@ -44,11 +52,9 @@ impl TreeObject {
         total
     }
 
-    pub fn write_to<T>(&self, writer: &mut T) -> std::io::Result<()> where T: Write {
-        write!(writer, "tree {}\x00", self.size())?;
-
+    fn write_body_to<W>(&self, writer: &mut W) -> std::io::Result<()> where W: Write {
         for entry in self.entries.iter() {
-            entry.write_to(writer)?
+            entry.write_to(writer)?;
         }
 
         Ok(())

@@ -5,10 +5,11 @@ use std::path::Path;
 use std::io::{BufReader, BufWriter, Read, Write, stdin};
 
 mod api;
+use api::objects::base::ObjectBase;
 use api::objects::tree::{TreeObject, TreeEntry};
 use api::reflog::{RefLog, RefLogKind, append_reflog};
 use api::objects::io::{ObjectWriter, read_object};
-use api::objects::blob::write_blob_object;
+use api::objects::blob::BlobObject;
 
 fn print_usage(args: &Vec<String>) {
     eprintln!("Usage: {:} subcommand", args[0])
@@ -115,16 +116,30 @@ fn do_read_object(subcommand_args: Vec<String>) -> i32 {
 
 fn do_write_blob() -> i32 {
     let mut stream = BufReader::new(stdin());
+    let mut content = Vec::new();
 
-    match write_blob_object(&mut stream) {
+    if let Err(_) = stream.read_to_end(&mut content) {
+        eprintln!("error: failed to read stdin");
+        return 1;
+    }
+
+    let blob_object = BlobObject::new(content);
+    let mut writer = ObjectWriter::new();
+
+    if let Err(_) = blob_object.write_to(&mut writer) {
+        eprintln!("error: failed to write blob object");
+        return 1;
+    }
+
+    match writer.finalize() {
         Ok(hash) => {
             println!("{}", hash);
             0
         },
         Err(_) => {
             eprintln!("error: failed to write blob object");
-            return 1;
-        },
+            1
+        }
     }
 }
 

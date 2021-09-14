@@ -1,15 +1,29 @@
-use std::io::{self, Read, prelude::*};
+use std::io::prelude::*;
 
-use crate::api::objects::io::ObjectWriter;
+use crate::api::objects::base::ObjectBase;
 
-pub fn write_blob_object<R>(stream: &mut R) -> io::Result<String> where R: Read {
-    let mut content = Vec::new();
-    let size = stream.read_to_end(&mut content)?;
+pub struct BlobObject {
+    pub content: Vec<u8>,
+}
 
-    let mut writer = ObjectWriter::new();
-    write!(writer, "blob {}\x00", size)?;
-    writer.write(&content)?;
-    let hash = writer.finalize()?;
+impl BlobObject {
+    pub fn new(content: Vec<u8>) -> Self {
+        Self {
+            content
+        }
+    }
+}
 
-    Ok(hash)
+impl ObjectBase for BlobObject {
+    fn obj_type(&self) -> &str {
+        "blob"
+    }
+
+    fn body_size(&self) -> usize {
+        self.content.len()
+    }
+
+    fn write_body_to<W>(&self, writer: &mut W) -> std::io::Result<()> where W: Write {
+        writer.write_all(&self.content)
+    }
 }

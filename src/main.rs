@@ -7,7 +7,7 @@ use std::io::{BufReader, BufWriter, Read, Write, stdin};
 mod api;
 use api::objects::tree::{TreeObject, TreeEntry};
 use api::reflog::{RefLog, RefLogKind, append_reflog};
-use api::objects::raw::{ObjectWriter, read_object};
+use api::objects::io::{ObjectWriter, read_object};
 use api::objects::blob::write_blob_object;
 
 fn print_usage(args: &Vec<String>) {

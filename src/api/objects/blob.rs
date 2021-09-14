@@ -1,6 +1,6 @@
 use std::io::{self, Read, prelude::*};
 
-use crate::api::objects::raw::ObjectWriter;
+use crate::api::objects::io::ObjectWriter;
 
 pub fn write_blob_object<R>(stream: &mut R) -> io::Result<String> where R: Read {
     let mut content = Vec::new();

@@ -9,6 +9,7 @@ use api::objects::tree::{TreeObject, TreeEntry};
 use api::reflog::{RefLog, RefLogKind, append_reflog};
 use api::objects::io::{ObjectWriter, read_object};
 use api::objects::blob::BlobObject;
+use api::tree;
 
 fn print_usage(args: &Vec<String>) {
     eprintln!("Usage: {:} subcommand", args[0])
@@ -165,6 +166,22 @@ fn do_write_tree() -> i32 {
     }
 }
 
+fn do_tree_test() -> i32 {
+    let mut root_tree = tree::Tree::new();
+
+    let mut path1 = vec![String::from("A"), String::from("B"), String::from("a")];
+    let mut path2 = vec![String::from("A"), String::from("B"), String::from("b")];
+    let mut path3 = vec![String::from("C"), String::from("C")];
+
+    root_tree.add_path(&mut path1, true);
+    root_tree.add_path(&mut path2, true);
+    root_tree.add_path(&mut path3, true);
+
+    println!("{:?}", root_tree);
+
+    0
+}
+
 fn main() {
     let mut args: Vec<String> = args().collect();
 
@@ -194,6 +211,9 @@ fn main() {
         "write-tree" => {
             do_write_tree()
         },
+        "tree-test" => {
+            do_tree_test()
+        }
         "add" => {
             println!("add!!!");
 

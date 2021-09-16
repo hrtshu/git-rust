@@ -23,7 +23,7 @@ impl Tree {
         let entry_name = path.remove(0);
         let entry_object =
             if is_file && path.len() == 0 {
-                TreeEntryObject::Blob(Blob { path: entry_name.clone() })
+                TreeEntryObject::Blob(Blob { path: entry_name.to_owned() })
             } else {
                 TreeEntryObject::Tree(Tree::new())
             };

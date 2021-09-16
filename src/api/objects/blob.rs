@@ -1,3 +1,4 @@
+use std::fs::File;
 use std::io::prelude::*;
 
 use super::base::ObjectBase;
@@ -11,6 +12,13 @@ impl BlobObject {
         Self {
             content
         }
+    }
+
+    pub fn from_path(path: &String) -> std::io::Result<Self> {
+        let mut f = File::open(path)?;
+        let mut buf = Vec::new();
+        f.read_to_end(&mut buf)?;
+        Ok(Self::new(buf))
     }
 }
 

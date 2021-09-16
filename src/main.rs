@@ -214,27 +214,13 @@ fn main() {
     let subcommand_args = args;
 
     let exit_code: i32 = match subcommand.as_str() {
-        "init" => {
-            do_init()
-        },
-        "write-object" => {
-            do_write_object()
-        },
-        "read-object" => {
-            do_read_object(subcommand_args)
-        },
-        "write-blob" => {
-            do_write_blob()
-        }
-        "write-tree" => {
-            do_write_tree()
-        },
-        "tree-test" => {
-            do_tree_test()
-        }
-        "reflog-test" => {
-            do_reflog_test()
-        },
+        "init"         => do_init(),
+        "write-object" => do_write_object(),
+        "read-object"  => do_read_object(subcommand_args),
+        "write-blob"   => do_write_blob(),
+        "write-tree"   => do_write_tree(),
+        "tree-test"    => do_tree_test(),
+        "reflog-test"  => do_reflog_test(),
         _ => {
             eprintln!("unknown subcommand: {:}", subcommand);
             1

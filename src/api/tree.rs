@@ -1,6 +1,10 @@
 use std::collections::HashMap;
 use std::fmt::Debug;
 
+use super::objects::blob::BlobObject;
+use super::objects::io::ObjectWriter;
+use super::objects::tree::TreeObject;
+
 struct Blob {
     path: String
 }
@@ -49,6 +53,31 @@ impl Tree {
             }
         };
         self.entries.insert(entry_name, entry);
+    }
+
+    pub fn write_recursively(self) -> std::io::Result<[u8; 20]> {
+        let mut tree_object = TreeObject::new();
+        for (name, entry) in self.entries {
+            let mut mode = String::from("040000");
+            let hash = match entry.object {
+                TreeEntryObject::Blob(blob) => {
+                    mode = String::from("100644");
+                    let writer = ObjectWriter::new();
+                    let blob_object = BlobObject::from_path(&blob.path)?;
+                    writer.write_object(blob_object)?
+                },
+                TreeEntryObject::Tree(tree) => {
+                    tree.write_recursively()?
+                },
+            };
+            tree_object.add(super::objects::tree::TreeEntry {
+                mode,
+                name,
+                hash
+            })
+        }
+        let writer = ObjectWriter::new();
+        writer.write_object(tree_object)
     }
 }
 

@@ -169,15 +169,13 @@ fn do_write_tree() -> i32 {
 fn do_tree_test() -> i32 {
     let mut root_tree = tree::Tree::new();
 
-    let mut path1 = String::from("A/B/a");
-    let mut path2 = String::from("A/B/b");
-    let mut path3 = String::from("C/C");
+    let mut path1 = String::from("src/api/objects/blob.rs");
 
     root_tree.add_path(&mut path1, true);
-    root_tree.add_path(&mut path2, true);
-    root_tree.add_path(&mut path3, true);
 
     println!("{:?}", root_tree);
+
+    root_tree.write_recursively().unwrap();
 
     0
 }

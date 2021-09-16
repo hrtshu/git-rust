@@ -169,13 +169,17 @@ fn do_write_tree() -> i32 {
 fn do_tree_test() -> i32 {
     let mut root_tree = tree::Tree::new();
 
-    let mut path1 = vec![String::from("A"), String::from("B"), String::from("a")];
-    let mut path2 = vec![String::from("A"), String::from("B"), String::from("b")];
-    let mut path3 = vec![String::from("C"), String::from("C")];
+    let path1 = String::from("A/B/a");
+    let path2 = String::from("A/B/b");
+    let path3 = String::from("C/C");
 
-    root_tree.add_path(&mut path1, true);
-    root_tree.add_path(&mut path2, true);
-    root_tree.add_path(&mut path3, true);
+    let mut split_path1: Vec<String> = path1.split("/").map(String::from).collect();
+    let mut split_path2: Vec<String> = path2.split("/").map(String::from).collect();
+    let mut split_path3: Vec<String> = path3.split("/").map(String::from).collect();
+
+    root_tree.add_path(&mut split_path1, true);
+    root_tree.add_path(&mut split_path2, true);
+    root_tree.add_path(&mut split_path3, true);
 
     println!("{:?}", root_tree);
 

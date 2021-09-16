@@ -182,6 +182,24 @@ fn do_tree_test() -> i32 {
     0
 }
 
+fn do_reflog_test() -> i32 {
+    println!("add!!!");
+
+    let ref_log = RefLog {
+        prev_hash: String::from("0000000000000000000000000000000000000000"),
+        hash: String::from("335584cfc68b36a5f2332c10b32a0cf6a441cad8"),
+        author: String::from("Shuhei"),
+        email: String::from("sh7916@gmail.com"),
+        timestamp: 1631017871,
+        timezone: 540,
+        kind: RefLogKind::COMMIT,
+        description: String::from("Initial commit"),
+    };
+    append_reflog("hoge", ref_log);
+
+    0
+}
+
 fn main() {
     let mut args: Vec<String> = args().collect();
 
@@ -214,22 +232,8 @@ fn main() {
         "tree-test" => {
             do_tree_test()
         }
-        "add" => {
-            println!("add!!!");
-
-            let ref_log = RefLog {
-                prev_hash: String::from("0000000000000000000000000000000000000000"),
-                hash: String::from("335584cfc68b36a5f2332c10b32a0cf6a441cad8"),
-                author: String::from("Shuhei"),
-                email: String::from("sh7916@gmail.com"),
-                timestamp: 1631017871,
-                timezone: 540,
-                kind: RefLogKind::COMMIT,
-                description: String::from("Initial commit"),
-            };
-            append_reflog("hoge", ref_log);
-
-            0
+        "reflog-test" => {
+            do_reflog_test()
         },
         _ => {
             eprintln!("unknown subcommand: {:}", subcommand);

@@ -16,7 +16,12 @@ impl Tree {
         }
     }
 
-    pub fn add_path(&mut self, path: &mut Vec<TreeEntryName>, is_file: bool) {
+    pub fn add_path(&mut self, path: &String, is_file: bool) {
+        let mut split_path: Vec<String> = path.split("/").map(|s| s.to_string()).collect();
+        self._add_path(&mut split_path, is_file)
+    }
+
+    fn _add_path(&mut self, path: &mut Vec<TreeEntryName>, is_file: bool) {
         if path.len() <= 0 {
             return;
         }
@@ -39,7 +44,7 @@ impl Tree {
         entry.object = match entry.object {
             TreeEntryObject::Blob(blob) => TreeEntryObject::Blob(blob),
             TreeEntryObject::Tree(mut tree) => {
-                tree.add_path(path, is_file);
+                tree._add_path(path, is_file);
                 TreeEntryObject::Tree(tree)
             }
         };

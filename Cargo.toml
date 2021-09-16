@@ -9,6 +9,7 @@ edition = "2018"
 [dependencies]
 sha-1 = "0.9"
 flate2 = "1.0"
+hex = "0.4.3"
 
 [[bin]]
 name = "git-rust"

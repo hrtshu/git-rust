@@ -7,7 +7,7 @@ use std::io::{BufReader, BufWriter, Read, Write, stdin};
 mod api;
 use api::objects::tree::{TreeObject, TreeEntry};
 use api::reflog::{RefLog, RefLogKind, append_reflog};
-use api::objects::io::{ObjectWriter, read_object};
+use api::objects::io::{ObjectWriter, read_object, byte_hash_to_string};
 use api::objects::blob::BlobObject;
 use api::tree;
 
@@ -77,7 +77,7 @@ fn do_write_object() -> i32 {
 
     match writer.finalize() {
         Ok(hash) => {
-            println!("{}", hash);
+            println!("{}", byte_hash_to_string(&hash));
             0
         },
         Err(_) => {
@@ -128,7 +128,7 @@ fn do_write_blob() -> i32 {
 
     match writer.write_object(blob_object) {
         Ok(hash) => {
-            println!("{}", hash);
+            println!("{}", byte_hash_to_string(&hash));
             0
         },
         Err(_) => {
@@ -156,7 +156,7 @@ fn do_write_tree() -> i32 {
 
     match writer.write_object(tree) {
         Ok(hash) => {
-            println!("{}", hash);
+            println!("{}", byte_hash_to_string(&hash));
             0
         },
         Err(_) => {

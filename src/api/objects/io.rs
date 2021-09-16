@@ -45,9 +45,10 @@ impl ObjectWriter {
         }
     }
 
-    pub fn write_object<Base>(mut self, object: Base) -> std::io::Result<HashType> where Base: ObjectBase {
-        object.write_to(&mut self)?;
-        self.finalize()
+    pub fn write<Base>(object: Base) -> std::io::Result<HashType> where Base: ObjectBase {
+        let mut writer = Self::new();
+        object.write_to(&mut writer)?;
+        writer.finalize()
     }
 
     pub fn finalize(self) -> io::Result<HashType> {

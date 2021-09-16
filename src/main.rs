@@ -124,9 +124,8 @@ fn do_write_blob() -> i32 {
     }
 
     let blob_object = BlobObject::new(content);
-    let writer = ObjectWriter::new();
 
-    match writer.write_object(blob_object) {
+    match ObjectWriter::write(blob_object) {
         Ok(hash) => {
             println!("{}", byte_hash_to_string(&hash));
             0
@@ -152,9 +151,7 @@ fn do_write_tree() -> i32 {
         hash: *b"0123456789abcdef0123",
     });
 
-    let writer = ObjectWriter::new();
-
-    match writer.write_object(tree) {
+    match ObjectWriter::write(tree) {
         Ok(hash) => {
             println!("{}", byte_hash_to_string(&hash));
             0

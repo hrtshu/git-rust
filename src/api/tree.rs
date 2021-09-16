@@ -62,9 +62,8 @@ impl Tree {
             let hash = match entry.object {
                 TreeEntryObject::Blob(blob) => {
                     mode = String::from("100644");
-                    let writer = ObjectWriter::new();
                     let blob_object = BlobObject::from_path(&blob.path)?;
-                    writer.write_object(blob_object)?
+                    ObjectWriter::write(blob_object)?
                 },
                 TreeEntryObject::Tree(tree) => {
                     tree.write_recursively()?
@@ -76,8 +75,7 @@ impl Tree {
                 hash
             })
         }
-        let writer = ObjectWriter::new();
-        writer.write_object(tree_object)
+        ObjectWriter::write(tree_object)
     }
 }
 

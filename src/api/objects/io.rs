@@ -1,5 +1,5 @@
 use std::convert::TryInto;
-use std::io;
+use std::io::{self, BufReader};
 use std::io::prelude::*;
 use std::fs::{File, OpenOptions, create_dir_all};
 use std::path::{Path, PathBuf};
@@ -9,8 +9,6 @@ use sha1::{Sha1, Digest};
 use hex;
 
 use super::base::ObjectBase;
-
-const BUF_SIZE: usize = 2048;
 
 const OBJECTS_DIR: &str = "git2/objects/";
 
@@ -81,25 +79,42 @@ impl Write for ObjectWriter {
     }
 }
 
-pub fn read_object(str_hash: &str) -> io::Result<Vec<u8>> {
-    let mut writer = Vec::new();
-    let mut decoder = ZlibDecoder::new(writer);
+pub struct ObjectReader {
+    reader: BufReader<File>,
+    decoder: ZlibDecoder<Vec<u8>>,
+}
 
-    // current_dir: falseを渡しているのでErrが返ることはない
-    let object_path = get_object_path(str_hash, false).unwrap();
-    let mut f = io::BufReader::new(File::open(object_path)?);
+impl ObjectReader {
+    pub fn read(str_hash: &str) -> std::io::Result<Vec<u8>> {
+        let mut reader = ObjectReader::new(str_hash)?;
+        let mut buf = Vec::new();
 
-    let mut buf = [0u8; BUF_SIZE];
+        reader.read_to_end(&mut buf)?;
+        reader.finalize()?;
 
-    loop {
-        if f.read(&mut buf)? <= 0 {
-            break;
-        }
-
-        decoder.write(&buf)?;
+        Ok(buf)
     }
 
-    writer = decoder.finish()?;
+    pub fn new(str_hash: &str) -> std::io::Result<Self> {
+        // current_dir: falseを渡しているのでErrが返ることはない
+        let object_path = get_object_path(str_hash, false).unwrap();
 
-    Ok(writer)
+        Ok(Self {
+            reader: io::BufReader::new(File::open(object_path)?),
+            decoder: ZlibDecoder::new(Vec::new())
+        })
+    }
+
+    pub fn finalize(self) -> io::Result<Vec<u8>> {
+        let res = self.decoder.finish()?;
+        Ok(res)
+    }
+}
+
+impl Read for ObjectReader {
+    fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
+        let size = self.reader.read(buf)?;
+        self.decoder.write(&buf)?;
+        Ok(size)
+    }
 }

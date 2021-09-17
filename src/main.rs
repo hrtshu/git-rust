@@ -7,7 +7,7 @@ use std::io::{BufReader, BufWriter, Read, Write, stdin};
 mod api;
 use api::objects::tree::{Mode, TreeEntry, TreeObject};
 use api::reflog::{RefLog, RefLogKind, append_reflog};
-use api::objects::io::{ObjectWriter, read_object, byte_hash_to_string};
+use api::objects::io::{ObjectWriter, ObjectReader, byte_hash_to_string};
 use api::objects::blob::BlobObject;
 use api::tree;
 
@@ -94,7 +94,7 @@ fn do_read_object(subcommand_args: Vec<String>) -> i32 {
     }
     let hash = subcommand_args[0].to_string();
 
-    let content = match read_object(&hash) {
+    let content = match ObjectReader::read(&hash) {
         Ok(content) => content,
         Err(_) => {
             eprintln!("error: failed to read object file");

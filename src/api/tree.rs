@@ -3,7 +3,7 @@ use std::fmt::Debug;
 
 use super::objects::blob::BlobObject;
 use super::objects::io::{HashType, ObjectWriter};
-use super::objects::tree::TreeObject;
+use super::objects::tree::{Mode, TreeObject};
 
 struct Blob {
     path: String
@@ -58,10 +58,10 @@ impl Tree {
     pub fn write_recursively(self) -> std::io::Result<HashType> {
         let mut tree_object = TreeObject::new();
         for (name, entry) in self.entries {
-            let mut mode = String::from("040000");
+            let mut mode = Mode(0o40000);
             let hash = match entry.object {
                 TreeEntryObject::Blob(blob) => {
-                    mode = String::from("100644");
+                    mode = Mode(0o100644);
                     let blob_object = BlobObject::from_path(&blob.path)?;
                     ObjectWriter::write(blob_object)?
                 },

@@ -1,10 +1,20 @@
+use std::fmt::Display;
 use std::io::Write;
 
 use super::base::ObjectBase;
 use super::io::{HASH_SIZE, HashType};
 
+pub struct Mode(pub u32);
+
+impl Display for Mode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = format!("{:06o}", self.0);
+        write!(f, "{}", &s[s.len()-6..])
+    }
+}
+
 pub struct TreeEntry {
-    pub mode: String, // TODO: 文字列長をバリデーション
+    pub mode: Mode,
     pub name: String,
     pub hash: HashType,
 }

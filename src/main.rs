@@ -5,7 +5,7 @@ use std::path::Path;
 use std::io::{BufReader, BufWriter, Read, Write, stdin};
 
 mod api;
-use api::objects::tree::{TreeObject, TreeEntry};
+use api::objects::tree::{Mode, TreeEntry, TreeObject};
 use api::reflog::{RefLog, RefLogKind, append_reflog};
 use api::objects::io::{ObjectWriter, read_object, byte_hash_to_string};
 use api::objects::blob::BlobObject;
@@ -141,12 +141,12 @@ fn do_write_tree() -> i32 {
     let mut tree = TreeObject::new();
 
     tree.add(TreeEntry {
-        mode: String::from("100644"),
+        mode: Mode(0o100644),
         name: String::from("hoge.txt"),
         hash: *b"0123456789abcdef0123",
     });
     tree.add(TreeEntry {
-        mode: String::from("100644"),
+        mode: Mode(0o100644),
         name: String::from("foo.txt"),
         hash: *b"0123456789abcdef0123",
     });

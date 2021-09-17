@@ -1,15 +1,19 @@
 use std::fmt::Display;
 use std::io::Write;
 
+use const_concat::const_concat;
+
 use super::base::ObjectBase;
 use super::io::{HASH_SIZE, HashType};
+
+const MODE_LEN: usize = 6;
 
 pub struct Mode(pub u32);
 
 impl Display for Mode {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let s = format!("{:06o}", self.0);
-        write!(f, "{}", &s[s.len()-6..])
+        let s = format!(const_concat!("{:0", MODE_LEN, "o}"), self.0);
+        write!(f, "{}", &s[(s.len() - MODE_LEN)..])
     }
 }
 
@@ -28,7 +32,7 @@ impl TreeEntry {
     }
 
     pub fn size(&self) -> usize {
-        6 + 1 + self.name.len() + 1 + HASH_SIZE
+        MODE_LEN + 1 + self.name.len() + 1 + HASH_SIZE
     }
 }
 

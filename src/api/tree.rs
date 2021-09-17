@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::fmt::Debug;
 
 use super::objects::blob::BlobObject;
-use super::objects::io::ObjectWriter;
+use super::objects::io::{HashType, ObjectWriter};
 use super::objects::tree::TreeObject;
 
 struct Blob {
@@ -55,7 +55,7 @@ impl Tree {
         self.entries.insert(entry_name, entry);
     }
 
-    pub fn write_recursively(self) -> std::io::Result<[u8; 20]> {
+    pub fn write_recursively(self) -> std::io::Result<HashType> {
         let mut tree_object = TreeObject::new();
         for (name, entry) in self.entries {
             let mut mode = String::from("040000");

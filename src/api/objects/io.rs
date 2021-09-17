@@ -12,7 +12,9 @@ use super::base::ObjectBase;
 
 const OBJECTS_DIR: &str = "git2/objects/";
 
-type HashType = [u8; 20];
+pub const HASH_SIZE: usize = 20;
+
+pub type HashType = [u8; HASH_SIZE];
 
 pub struct ObjectWriter {
     encoder: ZlibEncoder<Vec<u8>>,

@@ -1,13 +1,12 @@
 use std::io::Write;
 
 use super::base::ObjectBase;
-
-const HASH_SIZE: usize = 20;
+use super::io::{HASH_SIZE, HashType};
 
 pub struct TreeEntry {
     pub mode: String, // TODO: 文字列長をバリデーション
     pub name: String,
-    pub hash: [u8; HASH_SIZE],
+    pub hash: HashType,
 }
 
 impl TreeEntry {

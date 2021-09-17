@@ -25,7 +25,7 @@ pub struct TreeEntry {
 
 impl TreeEntry {
     pub fn write_to<T>(&self, writer: &mut T) -> std::io::Result<()> where T: Write {
-        write!(writer, "{} {}\x00", self.mode, self.name)?;
+        write!(writer, "{} {}\0", self.mode, self.name)?;
         writer.write(&self.hash)?;
 
         Ok(())

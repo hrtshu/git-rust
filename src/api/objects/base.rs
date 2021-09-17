@@ -10,7 +10,7 @@ pub trait ObjectBase {
     }
 
     fn write_header_to<W>(&self, writer: &mut W) -> std::io::Result<()> where W: Write {
-        write!(writer, "{} {}\x00", self.obj_type(), self.body_size())
+        write!(writer, "{} {}\0", self.obj_type(), self.body_size())
     }
 
     fn body_size(&self) -> usize;

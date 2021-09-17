@@ -10,6 +10,8 @@ use hex;
 
 use super::base::ObjectBase;
 
+const BUF_SIZE: usize = 2048;
+
 const OBJECTS_DIR: &str = "git2/objects/";
 
 pub const HASH_SIZE: usize = 20;
@@ -78,8 +80,6 @@ impl Write for ObjectWriter {
         unimplemented!();
     }
 }
-
-const BUF_SIZE: usize = 2048;
 
 pub fn read_object(str_hash: &str) -> io::Result<Vec<u8>> {
     let mut writer = Vec::new();

@@ -4,7 +4,7 @@ use std::fs::{create_dir, File};
 use std::path::Path;
 use std::io::{BufReader, BufWriter, Read, Write, stdin};
 
-use chrono::Local;
+use chrono::Utc;
 
 mod api;
 use api::objects::commit::Timestamp;
@@ -181,10 +181,9 @@ fn do_tree_test() -> i32 {
 }
 
 fn do_commit_test() -> i32 {
-    let ts = Timestamp {
-        epoch: Local::now().timestamp(),
-        tz_sec: 9 * 3600 + 20,
-    };
+    let ts = Timestamp::now();
+    println!("{}", ts);
+    let ts = Timestamp::from_datetime(Utc::now());
     println!("{}", ts);
     0
 }

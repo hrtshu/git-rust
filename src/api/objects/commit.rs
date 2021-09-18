@@ -1,7 +1,7 @@
 
 use std::fmt::Display;
 
-use chrono::FixedOffset;
+use chrono::{DateTime, FixedOffset, Local, Offset, TimeZone};
 
 use super::base::ObjectBase;
 use super::io::Hash;
@@ -18,8 +18,21 @@ impl Display for User {
 }
 
 pub struct Timestamp {
-  pub epoch: i64,
-  pub tz_sec: i32,
+  epoch: i64,
+  tz_sec: i32,
+}
+
+impl Timestamp {
+  pub fn now() -> Self {
+    Self::from_datetime(Local::now())
+  }
+
+  pub fn from_datetime<Tz>(datetime: DateTime<Tz>) -> Self where Tz: TimeZone {
+    Self {
+      epoch: datetime.timestamp(),
+      tz_sec: datetime.offset().fix().local_minus_utc(),
+    }
+  }
 }
 
 impl Display for Timestamp {

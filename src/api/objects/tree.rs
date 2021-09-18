@@ -1,8 +1,6 @@
 use std::fmt::Display;
 use std::io::Write;
 
-use const_concat::const_concat;
-
 use super::base::ObjectBase;
 use super::io::{HASH_SIZE, HashType};
 
@@ -12,7 +10,7 @@ pub struct Mode(pub u32);
 
 impl Display for Mode {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let s = format!(const_concat!("{:0", MODE_LEN, "o}"), self.0);
+        let s= format!("{:06o}", self.0); // TODO: もし可能であれば6をMODE_LEN定数で埋め込む
         write!(f, "{}", &s[(s.len() - MODE_LEN)..])
     }
 }

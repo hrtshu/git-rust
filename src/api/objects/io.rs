@@ -87,10 +87,9 @@ pub struct ObjectReader {
 impl ObjectReader {
     pub fn read(str_hash: &str) -> std::io::Result<Vec<u8>> {
         let mut reader = ObjectReader::new(str_hash)?;
-        let mut buf = Vec::new();
 
-        reader.read_to_end(&mut buf)?;
-        reader.finalize()?;
+        reader.read_to_end()?;
+        let buf = reader.finalize()?;
 
         Ok(buf)
     }
@@ -101,20 +100,19 @@ impl ObjectReader {
 
         Ok(Self {
             reader: io::BufReader::new(File::open(object_path)?),
-            decoder: ZlibDecoder::new(Vec::new())
+            decoder: ZlibDecoder::new(Vec::new()),
         })
+    }
+
+    fn read_to_end(&mut self) -> std::io::Result<usize> {
+        let mut buf = Vec::new();
+        let size = self.reader.read_to_end(&mut buf)?;
+        self.decoder.write(&buf)?;
+        Ok(size)
     }
 
     pub fn finalize(self) -> io::Result<Vec<u8>> {
         let res = self.decoder.finish()?;
         Ok(res)
-    }
-}
-
-impl Read for ObjectReader {
-    fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
-        let size = self.reader.read(buf)?;
-        self.decoder.write(&buf)?;
-        Ok(size)
     }
 }

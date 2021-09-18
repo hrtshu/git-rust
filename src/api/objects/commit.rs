@@ -51,17 +51,17 @@ impl Display for Timestamp {
     }
 }
 
-pub struct CommitObject {
-  tree_hash: Hash,
-  parent_hash: Hash,
-  author: User,
-  author_timestamp: Timestamp,
-  committer: User,
-  commit_timestamp: Timestamp,
-  message: String,
+pub struct CommitObject<'a> {
+  pub tree_hash: Hash,
+  pub parent_hash: Hash,
+  pub author: &'a User,
+  pub author_timestamp: &'a Timestamp,
+  pub committer: &'a User,
+  pub commit_timestamp: &'a Timestamp,
+  pub message: String,
 }
 
-impl ObjectBase for CommitObject {
+impl <'a>ObjectBase for CommitObject<'a> {
     fn obj_type(&self) -> &str {
         "commit"
     }

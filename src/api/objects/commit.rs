@@ -1,13 +1,26 @@
 
+use std::fmt::Display;
+
 use super::base::ObjectBase;
 use super::io::Hash;
+
+pub struct User {
+  pub name: String,
+  pub email: String,
+}
+
+impl Display for User {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} <{}>", self.name, self.email)
+    }
+}
 
 pub struct CommitObject {
   tree_hash: Hash,
   parent_hash: Hash,
-  author: String,
+  author: User,
   author_date: String,
-  committer: String,
+  committer: User,
   commit_date: String,
   message: String,
 }

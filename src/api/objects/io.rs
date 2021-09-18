@@ -1,6 +1,5 @@
 use std::convert::TryInto;
-use std::io::{self, BufReader};
-use std::io::prelude::*;
+use std::io::{self, BufReader, prelude::*};
 use std::fs::{File, OpenOptions, create_dir_all};
 use std::path::{Path, PathBuf};
 use flate2::Compression;
@@ -40,17 +39,17 @@ fn get_object_path(str_hash: &str, create_dir: bool) -> io::Result<PathBuf> {
 }
 
 impl ObjectWriter {
+    pub fn write<Base>(object: Base) -> std::io::Result<HashType> where Base: ObjectBase {
+        let mut writer = Self::new();
+        object.write_to(&mut writer)?;
+        writer.finalize()
+    }
+
     pub fn new() -> Self {
         Self {
             encoder: ZlibEncoder::new(Vec::new(), Compression::default()),
             hasher: Sha1::new(),
         }
-    }
-
-    pub fn write<Base>(object: Base) -> std::io::Result<HashType> where Base: ObjectBase {
-        let mut writer = Self::new();
-        object.write_to(&mut writer)?;
-        writer.finalize()
     }
 
     pub fn finalize(self) -> io::Result<HashType> {
@@ -86,7 +85,7 @@ pub struct ObjectReader {
 
 impl ObjectReader {
     pub fn read(str_hash: &str) -> std::io::Result<Vec<u8>> {
-        let mut reader = ObjectReader::new(str_hash)?;
+        let mut reader = Self::new(str_hash)?;
 
         reader.read_to_end()?;
         let buf = reader.finalize()?;

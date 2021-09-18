@@ -1,4 +1,5 @@
 use std::convert::TryInto;
+use std::fmt::Display;
 use std::io::{self, BufReader, prelude::*};
 use std::fs::{File, OpenOptions, create_dir_all};
 use std::path::{Path, PathBuf};
@@ -13,15 +14,25 @@ const OBJECTS_DIR: &str = "git2/objects/";
 
 pub const HASH_SIZE: usize = 20;
 
-pub type HashType = [u8; HASH_SIZE];
+pub struct Hash(pub [u8; HASH_SIZE]);
+
+impl Hash {
+    // TODO: バイトに変換する適切なトレイトがあればそれに置換する
+    pub fn as_bytes(&self) -> &[u8; HASH_SIZE] {
+        &self.0
+    }
+}
+
+impl Display for Hash {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = hex::encode(self.0);
+        write!(f, "{}", s)
+    }
+}
 
 pub struct ObjectWriter {
     encoder: ZlibEncoder<Vec<u8>>,
     hasher: Sha1,
-}
-
-pub fn byte_hash_to_string(hash: &HashType) -> String {
-    hex::encode(hash)
 }
 
 fn get_object_path(str_hash: &str, create_dir: bool) -> io::Result<PathBuf> {
@@ -39,7 +50,7 @@ fn get_object_path(str_hash: &str, create_dir: bool) -> io::Result<PathBuf> {
 }
 
 impl ObjectWriter {
-    pub fn write<Base>(object: Base) -> std::io::Result<HashType> where Base: ObjectBase {
+    pub fn write<Base>(object: Base) -> std::io::Result<Hash> where Base: ObjectBase {
         let mut writer = Self::new();
         object.write_to(&mut writer)?;
         writer.finalize()
@@ -52,13 +63,12 @@ impl ObjectWriter {
         }
     }
 
-    pub fn finalize(self) -> io::Result<HashType> {
+    pub fn finalize(self) -> io::Result<Hash> {
         let mut compressed_bytes = self.encoder.finish()?;
         let res = self.hasher.finalize();
-        let hash: HashType = res.as_slice().try_into().unwrap(); // TODO
+        let hash = Hash(res.as_slice().try_into().unwrap()); // TODO
 
-        let str_hash = byte_hash_to_string(&hash);
-        let object_path = get_object_path(&str_hash, true)?;
+        let object_path = get_object_path(&hash.to_string(), true)?;
         let mut f = io::BufWriter::new(OpenOptions::new().write(true).create(true).open(object_path)?);
         f.write_all(compressed_bytes.by_ref())?;
 

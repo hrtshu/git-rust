@@ -2,7 +2,7 @@ use std::fmt::Display;
 use std::io::Write;
 
 use super::base::ObjectBase;
-use super::io::{HASH_SIZE, HashType};
+use super::io::{HASH_SIZE, Hash};
 
 const MODE_LEN: usize = 6;
 
@@ -18,13 +18,13 @@ impl Display for Mode {
 pub struct TreeEntry {
     pub mode: Mode,
     pub name: String,
-    pub hash: HashType,
+    pub hash: Hash,
 }
 
 impl TreeEntry {
     pub fn write_to<T>(&self, writer: &mut T) -> std::io::Result<()> where T: Write {
         write!(writer, "{} {}\0", self.mode, self.name)?;
-        writer.write(&self.hash)?;
+        writer.write(self.hash.as_bytes())?;
 
         Ok(())
     }

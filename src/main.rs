@@ -7,7 +7,7 @@ use std::io::{BufReader, BufWriter, Read, Write, stdin};
 mod api;
 use api::objects::tree::{Mode, TreeEntry, TreeObject};
 use api::reflog::{RefLog, RefLogKind, append_reflog};
-use api::objects::io::{ObjectWriter, ObjectReader, byte_hash_to_string};
+use api::objects::io::{ObjectWriter, ObjectReader, Hash};
 use api::objects::blob::BlobObject;
 use api::tree;
 
@@ -77,7 +77,7 @@ fn do_write_object() -> i32 {
 
     match writer.finalize() {
         Ok(hash) => {
-            println!("{}", byte_hash_to_string(&hash));
+            println!("{}", &hash);
             0
         },
         Err(_) => {
@@ -127,7 +127,7 @@ fn do_write_blob() -> i32 {
 
     match ObjectWriter::write(blob_object) {
         Ok(hash) => {
-            println!("{}", byte_hash_to_string(&hash));
+            println!("{}", hash);
             0
         },
         Err(_) => {
@@ -143,17 +143,17 @@ fn do_write_tree() -> i32 {
     tree.add(TreeEntry {
         mode: Mode(0o100644),
         name: String::from("hoge.txt"),
-        hash: *b"0123456789abcdef0123",
+        hash: Hash(*b"0123456789abcdef0123"),
     });
     tree.add(TreeEntry {
         mode: Mode(0o100644),
         name: String::from("foo.txt"),
-        hash: *b"0123456789abcdef0123",
+        hash: Hash(*b"0123456789abcdef0123"),
     });
 
     match ObjectWriter::write(tree) {
         Ok(hash) => {
-            println!("{}", byte_hash_to_string(&hash));
+            println!("{}", hash);
             0
         },
         Err(_) => {

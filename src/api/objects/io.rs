@@ -13,6 +13,7 @@ use super::base::ObjectBase;
 const OBJECTS_DIR: &str = "git2/objects/";
 
 pub const HASH_SIZE: usize = 20;
+pub const STR_HASH_LEN: usize = 40;
 
 pub struct Hash(pub [u8; HASH_SIZE]);
 

@@ -4,7 +4,7 @@ use std::fmt::Display;
 use chrono::{DateTime, FixedOffset, Local, Offset, TimeZone};
 
 use super::base::ObjectBase;
-use super::io::Hash;
+use super::io::{Hash, STR_HASH_LEN};
 
 pub struct User {
   pub name: String,
@@ -67,7 +67,12 @@ impl ObjectBase for CommitObject {
     }
 
     fn body_size(&self) -> usize {
-        todo!()
+      4 + 1 + STR_HASH_LEN + 1 +
+      6 + 1 + STR_HASH_LEN + 1 +
+      6 + 1 + self.author.to_string().len() + 1 + self.author_timestamp.to_string().len() + 1 +
+      9 + 1 + self.committer.to_string().len() + 1 + self.commit_timestamp.to_string().len() + 1 +
+      1 +
+      self.message.len() + 1
     }
 
     fn write_body_to<W>(&self, writer: &mut W) -> std::io::Result<()> where W: std::io::Write {

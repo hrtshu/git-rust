@@ -4,7 +4,10 @@ use std::fs::{create_dir, File};
 use std::path::Path;
 use std::io::{BufReader, BufWriter, Read, Write, stdin};
 
+use chrono::Local;
+
 mod api;
+use api::objects::commit::Timestamp;
 use api::objects::tree::{Mode, TreeEntry, TreeObject};
 use api::reflog::{RefLog, RefLogKind, append_reflog};
 use api::objects::io::{ObjectWriter, ObjectReader, Hash};
@@ -177,6 +180,15 @@ fn do_tree_test() -> i32 {
     0
 }
 
+fn do_commit_test() -> i32 {
+    let ts = Timestamp {
+        epoch: Local::now().timestamp(),
+        tz_sec: 9 * 3600 + 20,
+    };
+    println!("{}", ts);
+    0
+}
+
 fn do_reflog_test() -> i32 {
     println!("add!!!");
 
@@ -215,6 +227,7 @@ fn main() {
         "write-blob"   => do_write_blob(),
         "write-tree"   => do_write_tree(),
         "tree-test"    => do_tree_test(),
+        "commit-test"  => do_commit_test(),
         "reflog-test"  => do_reflog_test(),
         _ => {
             eprintln!("unknown subcommand: {:}", subcommand);

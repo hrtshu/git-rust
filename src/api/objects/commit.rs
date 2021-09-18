@@ -1,6 +1,8 @@
 
 use std::fmt::Display;
 
+use chrono::FixedOffset;
+
 use super::base::ObjectBase;
 use super::io::Hash;
 
@@ -15,13 +17,34 @@ impl Display for User {
     }
 }
 
+pub struct Timestamp {
+  pub epoch: i64,
+  pub tz_sec: i32,
+}
+
+impl Display for Timestamp {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+      let offset =
+        if self.tz_sec >= 0 {
+          FixedOffset::east(self.tz_sec)
+        } else {
+          FixedOffset::west(-self.tz_sec)
+        };
+      let offset_str = offset.to_string();
+      let splitted_offset: Vec<&str> = offset_str.split(':').collect();
+      let offset_str = splitted_offset.join("");
+      let offset_str = &offset_str[..5]; // TODO: 本当に秒を削ぎ落とす必要があるかを検討
+      write!(f, "{} {}", self.epoch, offset_str)
+    }
+}
+
 pub struct CommitObject {
   tree_hash: Hash,
   parent_hash: Hash,
   author: User,
-  author_date: String,
+  author_timestamp: Timestamp,
   committer: User,
-  commit_date: String,
+  commit_timestamp: Timestamp,
   message: String,
 }
 
@@ -37,8 +60,8 @@ impl ObjectBase for CommitObject {
     fn write_body_to<W>(&self, writer: &mut W) -> std::io::Result<()> where W: std::io::Write {
         writeln!(writer, "tree {}", &self.tree_hash)?;
         writeln!(writer, "parent {}", &self.parent_hash)?;
-        writeln!(writer, "author {} {}", &self.author, &self.author_date)?;
-        writeln!(writer, "committer {} {}", &self.committer, &self.commit_date)?;
+        writeln!(writer, "author {} {}", &self.author, &self.author_timestamp)?;
+        writeln!(writer, "committer {} {}", &self.committer, &self.commit_timestamp)?;
         writeln!(writer)?;
         writeln!(writer, "{}", self.message)?;
         Ok(())

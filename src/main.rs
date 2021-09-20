@@ -3,8 +3,9 @@ use std::process::exit;
 use std::fs::{create_dir, File};
 use std::path::Path;
 use std::io::{BufReader, BufWriter, Read, Write, stdin};
+use std::str::FromStr;
 
-use chrono::Utc;
+use chrono::{DateTime, Local, Utc};
 
 mod api;
 use api::objects::commit::Timestamp;
@@ -12,6 +13,7 @@ use api::objects::tree::{Mode, TreeEntry, TreeObject};
 use api::reflog::{RefLog, RefLogKind, append_reflog};
 use api::objects::io::{ObjectWriter, ObjectReader, Hash};
 use api::objects::blob::BlobObject;
+use api::objects::commit::{CommitObject, User};
 use api::tree;
 
 fn print_usage(args: &Vec<String>) {
@@ -175,7 +177,24 @@ fn do_tree_test() -> i32 {
 
     println!("{:?}", root_tree);
 
-    root_tree.write_recursively().unwrap();
+    let tree_hash = root_tree.write_recursively().unwrap();
+
+    let user = User { name: String::from("Shuhei"), email: String::from("sh7916@gmail.com") };
+    let timestamp = Timestamp::from_datetime::<Local>(DateTime::from_str("2021-09-16 00:00:00+09:00").unwrap());
+
+    let commit = CommitObject {
+        tree_hash,
+        parent_hash: Hash(*b"00000000000000000000"),
+        author: &user,
+        author_timestamp: &timestamp,
+        committer: &user,
+        commit_timestamp: &timestamp,
+        message: String::from("Initial commit"),
+    };
+
+    let hash = ObjectWriter::write(commit).unwrap();
+
+    println!("{}", hash);
 
     0
 }

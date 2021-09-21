@@ -8,7 +8,6 @@ use std::str::FromStr;
 use chrono::{DateTime, Local, Utc};
 
 mod api;
-use api::objects::commit::Timestamp;
 use api::objects::tree::{Mode, TreeEntry, TreeObject};
 use api::reflog::{RefLog, RefLogKind, append_reflog};
 use api::objects::io::{ObjectWriter, ObjectReader, Hash};
@@ -16,6 +15,7 @@ use api::objects::blob::BlobObject;
 use api::objects::commit::CommitObject;
 use api::tree;
 
+use crate::api::common::datetime::Timestamp;
 use crate::api::common::user::User;
 
 fn print_usage(args: &Vec<String>) {

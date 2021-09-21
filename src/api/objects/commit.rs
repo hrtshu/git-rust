@@ -7,8 +7,8 @@ use super::base::ObjectBase;
 use super::io::{Hash, STR_HASH_LEN};
 
 pub struct User {
-  pub name: String,
-  pub email: String,
+    pub name: String,
+    pub email: String,
 }
 
 impl Display for User {
@@ -23,9 +23,9 @@ pub struct Timestamp {
 }
 
 impl Timestamp {
-  pub fn now() -> Self {
-    Self::from_datetime(Local::now())
-  }
+    pub fn now() -> Self {
+        Self::from_datetime(Local::now())
+    }
 
   pub fn from_datetime<Tz>(datetime: DateTime<Tz>) -> Self where Tz: TimeZone {
     Self {
@@ -52,13 +52,13 @@ impl Display for Timestamp {
 }
 
 pub struct CommitObject<'a> {
-  pub tree_hash: Hash,
-  pub parent_hash: Hash,
-  pub author: &'a User,
-  pub author_timestamp: &'a Timestamp,
-  pub committer: &'a User,
-  pub commit_timestamp: &'a Timestamp,
-  pub message: String,
+    pub tree_hash: Hash,
+    pub parent_hash: Hash,
+    pub author: &'a User,
+    pub author_timestamp: &'a Timestamp,
+    pub committer: &'a User,
+    pub commit_timestamp: &'a Timestamp,
+    pub message: String,
 }
 
 impl <'a>ObjectBase for CommitObject<'a> {
@@ -67,12 +67,12 @@ impl <'a>ObjectBase for CommitObject<'a> {
     }
 
     fn body_size(&self) -> usize {
-      4 + 1 + STR_HASH_LEN + 1 +
-      6 + 1 + STR_HASH_LEN + 1 +
-      6 + 1 + self.author.to_string().len() + 1 + self.author_timestamp.to_string().len() + 1 +
-      9 + 1 + self.committer.to_string().len() + 1 + self.commit_timestamp.to_string().len() + 1 +
-      1 +
-      self.message.len() + 1
+        4 + 1 + STR_HASH_LEN + 1 +
+        6 + 1 + STR_HASH_LEN + 1 +
+        6 + 1 + self.author.to_string().len() + 1 + self.author_timestamp.to_string().len() + 1 +
+        9 + 1 + self.committer.to_string().len() + 1 + self.commit_timestamp.to_string().len() + 1 +
+        1 +
+        self.message.len() + 1
     }
 
     fn write_body_to<W>(&self, writer: &mut W) -> std::io::Result<()> where W: std::io::Write {

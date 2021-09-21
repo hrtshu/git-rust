@@ -1,21 +1,11 @@
-
 use std::fmt::Display;
 
 use chrono::{DateTime, FixedOffset, Local, Offset, TimeZone};
 
+use crate::api::common::user::User;
+
 use super::base::ObjectBase;
 use super::io::{Hash, STR_HASH_LEN};
-
-pub struct User {
-    pub name: String,
-    pub email: String,
-}
-
-impl Display for User {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{} <{}>", self.name, self.email)
-    }
-}
 
 pub struct Timezone {
     tz_sec: i32
